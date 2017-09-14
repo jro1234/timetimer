@@ -1,0 +1,38 @@
+#
+#Timeline: ADMDJob
+#   startup: Start, Event Started
+#   initialize: Launching Database, Event Started
+#   running: Event Started, Event Finished 
+#   shutdown: Event Finished, Stop
+#   startworker: ADMDJob::Workers Launching, Worker::initializing
+#
+
+Timeline: Worker
+   startup: initializing, running
+   shutdown: previous, Stopped
+   lifetime: running, Stopped
+   initialize: running, Task Handle
+   running: Advance, Advance
+   pulse: Heartbeat, Heartbeat
+   startscheduler: Worker::create scheduler, Scheduler::initializing
+   Tstart: Worker:: running, Scheduler:: Set Task
+
+
+Timeline: Scheduler
+   startup: initializing, Set Task
+   initialize: Set Task, Run Task
+   shutdown: previous, Stopped
+   running: Run Task, End Task
+   startmd: Scheduler::Run Task, OpenMMRun::GO...
+   Tinit: Scheduler:: Set Task, OpenMMRun::GO...
+   Trestart: End Task, Set Task
+   Tend: End Task, Stopped
+
+Timeline: OpenMMRun
+   startup: GO..., Reading PDB
+   shutdown: END SIMULATION, DONE
+   running: START SIMULATION, END SIMULATION
+   initialize: Reading PDB, START SIMULATION
+   Sload: GO..., START SIMULATION
+   Srun: START SIMULATION, END SIMULATION
+   STclose: OpenMMRun:: END SIMULATION, Scheduler::End Task
